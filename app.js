@@ -1,7 +1,7 @@
 (() => {
   const PAGE1_W = 1536;
   const PAGE1_H = 1024;
-  const PAGE2_W = 1100;
+  const PAGE2_W = 1160;
   const PAGE2_H = 1376;
   const BOX_W = 33;
   const BOX_H = 31;
@@ -9,6 +9,14 @@
 
   const seq = (start, count, step) =>
     Array.from({ length: count }, (_, i) => start + i * step);
+
+  const spreadXs = (left, right, count, boxW = BOX_W) => {
+    if (count === 1) return [left];
+    const step = (right - left - boxW) / (count - 1);
+    return Array.from({ length: count }, (_, i) =>
+      +(left + i * step).toFixed(2)
+    );
+  };
 
   const row75 = [207,247,287,327,368,408,448,488,528,568,607,647,686,726,765,804,843,882,921,960,999,1038,1077,1116,1155,1194,1233,1273,1313,1354,1395];
   const row155 = [328.5,368.5,408.5,448.5,488.5,528.5,568,607.5,647.5,686.5,726,765.5,804.5,843.5,882.5,921.5,960.5,999.5,1038.5,1077.5,1116.5,1155.5,1194.5,1233.5,1273.5,1313.5,1354.5,1395.5];
@@ -69,13 +77,62 @@
     { page: 1, id: "stayYear", label: "Срок пребывания · Año", kind: "slots", xs: [883,921,959,997], y: 979, numeric: true }
   ];
 
+  const P2_RIGHT = 1110;
+  const P2_LEFT_LONG = 145;
+  const P2_LEFT_MID = 218;
+  const P2_LEFT_BOTTOM = 33;
+  const P2_INN_LEFT = 706;
+
   const fields2 = [
-    { page: 2, id: "p2Surname", label: "Página 2 · Фамилия · Apellido", kind: "slots", xs: seq(145, 28, 33), y: 165, boxW: 33, boxH: 31 },
-    { page: 2, id: "p2Name", label: "Página 2 · Имя · Nombre", kind: "slots", xs: seq(145, 28, 33), y: 213, boxW: 33, boxH: 31 },
-    { page: 2, id: "p2Patronymic", label: "Página 2 · Отчество", kind: "slots", xs: seq(218, 26, 33), y: 261, boxW: 33, boxH: 31 },
-    { page: 2, id: "p2Organization1", label: "Página 2 · Наименование организации", kind: "slots", xs: seq(218, 26, 33), y: 329, boxW: 33, boxH: 31 },
-    { page: 2, id: "p2Organization2", label: "Página 2 · Наименование организации, продолжение", kind: "slots", xs: seq(33, 16, 37), y: 407, boxW: 33, boxH: 31 },
-    { page: 2, id: "p2Inn", label: "Página 2 · ИНН", kind: "slots", xs: seq(676, 12, 33), y: 407, boxW: 33, boxH: 31, numeric: true }
+    {
+      page: 2,
+      id: "p2Surname",
+      label: "Página 2 · Фамилия · Apellido",
+      kind: "slots",
+      xs: spreadXs(P2_LEFT_LONG, P2_RIGHT, 28),
+      y: 165
+    },
+    {
+      page: 2,
+      id: "p2Name",
+      label: "Página 2 · Имя · Nombre",
+      kind: "slots",
+      xs: spreadXs(P2_LEFT_LONG, P2_RIGHT, 28),
+      y: 213
+    },
+    {
+      page: 2,
+      id: "p2Patronymic",
+      label: "Página 2 · Отчество",
+      kind: "slots",
+      xs: spreadXs(P2_LEFT_MID, P2_RIGHT, 26),
+      y: 261
+    },
+    {
+      page: 2,
+      id: "p2Organization1",
+      label: "Página 2 · Наименование организации",
+      kind: "slots",
+      xs: spreadXs(P2_LEFT_MID, P2_RIGHT, 26),
+      y: 329
+    },
+    {
+      page: 2,
+      id: "p2Organization2",
+      label: "Página 2 · Наименование организации, продолжение",
+      kind: "slots",
+      xs: spreadXs(P2_LEFT_BOTTOM, 624, 16),
+      y: 407
+    },
+    {
+      page: 2,
+      id: "p2Inn",
+      label: "Página 2 · ИНН",
+      kind: "slots",
+      xs: spreadXs(P2_INN_LEFT, P2_RIGHT, 12),
+      y: 407,
+      numeric: true
+    }
   ];
 
   const allFields = [...fields, ...fields2];
@@ -228,9 +285,9 @@
   function drawSecondForm() {
     const { svg, text, rect } = svgBase(PAGE2_W, PAGE2_H, "page-two-paper");
 
-    text(550, 74, "Для принимающей стороны либо иностранного гражданина или лица без гражданства в случае,", 20, 700, "middle");
-    text(550, 103, "предусмотренном частью 3¹ статьи 22 Федерального закона \"О миграционном учете иностранных", 20, 700, "middle");
-    text(550, 132, "граждан и лиц без гражданства в Российской Федерации\"", 20, 700, "middle");
+    text(580, 74, "Для принимающей стороны либо иностранного гражданина или лица без гражданства в случае,", 20, 700, "middle");
+    text(580, 103, "предусмотренном частью 3¹ статьи 22 Федерального закона \"О миграционном учете иностранных", 20, 700, "middle");
+    text(580, 132, "граждан и лиц без гражданства в Российской Федерации\"", 20, 700, "middle");
 
     text(31, 192, "Фамилия", 20);
     text(31, 240, "Имя", 20);
@@ -238,7 +295,7 @@
     text(31, 311, "(при их наличии)", 18);
     text(31, 351, "Наименование", 20);
     text(31, 379, "организации", 20);
-    text(613, 434, "ИНН", 20);
+    text(663, 434, "ИНН", 20);
 
     fields2.forEach(field => {
       const bw = field.boxW || BOX_W;
@@ -264,8 +321,8 @@
     text(791, 1037, "гражданства действий, необходимых для его постановки", 19, 400, "middle");
     text(791, 1065, "на учет по месту пребывания", 19, 400, "middle");
 
-    text(550, 1277, "ОТРЫВНАЯ ЧАСТЬ БЛАНКА УВЕДОМЛЕНИЯ О ПРИБЫТИИ ИНОСТРАННОГО ГРАЖДАНИНА", 21, 400, "middle");
-    text(550, 1308, "ИЛИ ЛИЦА БЕЗ ГРАЖДАНСТВА В МЕСТО ПРЕБЫВАНИЯ", 21, 400, "middle");
+    text(580, 1277, "ОТРЫВНАЯ ЧАСТЬ БЛАНКА УВЕДОМЛЕНИЯ О ПРИБЫТИИ ИНОСТРАННОГО ГРАЖДАНИНА", 21, 400, "middle");
+    text(580, 1308, "ИЛИ ЛИЦА БЕЗ ГРАЖДАНСТВА В МЕСТО ПРЕБЫВАНИЯ", 21, 400, "middle");
 
     page2.insertBefore(svg, overlay2);
   }
