@@ -1,8 +1,8 @@
 (() => {
   const PAGE1_W = 1536;
   const PAGE1_H = 1024;
-  const PAGE2_W = 1160;
-  const PAGE2_H = 1376;
+  const PAGE2_W = 1536;
+  const PAGE2_H = 1921;
   const BOX_W = 33;
   const BOX_H = 31;
   const STORAGE_KEY = "form-editor-v1";
@@ -77,11 +77,10 @@
     { page: 1, id: "stayYear", label: "Срок пребывания · Año", kind: "slots", xs: [883,921,959,997], y: 979, numeric: true }
   ];
 
-  const P2_RIGHT = 1110;
-  const P2_LEFT_LONG = 145;
-  const P2_LEFT_MID = 218;
-  const P2_LEFT_BOTTOM = 33;
-  const P2_INN_LEFT = 706;
+  const P2_RIGHT = 1428;
+  const P2_LABEL_X = 109;
+  const P2_ROW_LEFT = 207;
+  const P2_ROW_INDENT = 328;
 
   const fields2 = [
     {
@@ -89,48 +88,60 @@
       id: "p2Surname",
       label: "Página 2 · Фамилия · Apellido",
       kind: "slots",
-      xs: spreadXs(P2_LEFT_LONG, P2_RIGHT, 28),
-      y: 165
+      xs: spreadXs(P2_ROW_LEFT, P2_RIGHT, 28),
+      y: 230,
+      boxW: BOX_W,
+      boxH: BOX_H
     },
     {
       page: 2,
       id: "p2Name",
       label: "Página 2 · Имя · Nombre",
       kind: "slots",
-      xs: spreadXs(P2_LEFT_LONG, P2_RIGHT, 28),
-      y: 213
+      xs: spreadXs(P2_ROW_LEFT, P2_RIGHT, 28),
+      y: 297,
+      boxW: BOX_W,
+      boxH: BOX_H
     },
     {
       page: 2,
       id: "p2Patronymic",
       label: "Página 2 · Отчество",
       kind: "slots",
-      xs: spreadXs(P2_LEFT_MID, P2_RIGHT, 26),
-      y: 261
+      xs: spreadXs(P2_ROW_INDENT, P2_RIGHT, 26),
+      y: 364,
+      boxW: BOX_W,
+      boxH: BOX_H
     },
     {
       page: 2,
       id: "p2Organization1",
       label: "Página 2 · Наименование организации",
       kind: "slots",
-      xs: spreadXs(P2_LEFT_MID, P2_RIGHT, 26),
-      y: 329
+      xs: spreadXs(P2_ROW_INDENT, P2_RIGHT, 26),
+      y: 459,
+      boxW: BOX_W,
+      boxH: BOX_H
     },
     {
       page: 2,
       id: "p2Organization2",
       label: "Página 2 · Наименование организации, продолжение",
       kind: "slots",
-      xs: spreadXs(P2_LEFT_BOTTOM, 624, 16),
-      y: 407
+      xs: spreadXs(P2_LABEL_X, 788, 16),
+      y: 568,
+      boxW: BOX_W,
+      boxH: BOX_H
     },
     {
       page: 2,
       id: "p2Inn",
       label: "Página 2 · ИНН",
       kind: "slots",
-      xs: spreadXs(P2_INN_LEFT, P2_RIGHT, 12),
-      y: 407,
+      xs: spreadXs(930, P2_RIGHT, 12),
+      y: 568,
+      boxW: BOX_W,
+      boxH: BOX_H,
       numeric: true
     }
   ];
@@ -285,17 +296,17 @@
   function drawSecondForm() {
     const { svg, text, rect } = svgBase(PAGE2_W, PAGE2_H, "page-two-paper");
 
-    text(580, 74, "Для принимающей стороны либо иностранного гражданина или лица без гражданства в случае,", 20, 700, "middle");
-    text(580, 103, "предусмотренном частью 3¹ статьи 22 Федерального закона \"О миграционном учете иностранных", 20, 700, "middle");
-    text(580, 132, "граждан и лиц без гражданства в Российской Федерации\"", 20, 700, "middle");
+    text(768, 103, "Для принимающей стороны либо иностранного гражданина или лица без гражданства в случае,", 20, 700, "middle");
+    text(768, 132, "предусмотренном частью 3¹ статьи 22 Федерального закона \"О миграционном учете иностранных", 20, 700, "middle");
+    text(768, 161, "граждан и лиц без гражданства в Российской Федерации\"", 20, 700, "middle");
 
-    text(31, 192, "Фамилия", 20);
-    text(31, 240, "Имя", 20);
-    text(31, 287, "Отчество", 20);
-    text(31, 311, "(при их наличии)", 18);
-    text(31, 351, "Наименование", 20);
-    text(31, 379, "организации", 20);
-    text(663, 434, "ИНН", 20);
+    text(109, 255, "Фамилия", 20);
+    text(109, 322, "Имя", 20);
+    text(109, 389, "Отчество", 20);
+    text(109, 413, "(при их наличии)", 18);
+    text(109, 484, "Наименование", 20);
+    text(109, 512, "организации", 20);
+    text(845, 593, "ИНН", 20);
 
     fields2.forEach(field => {
       const bw = field.boxW || BOX_W;
@@ -303,26 +314,26 @@
       field.xs.forEach(x => rect(x, field.y, bw, bh, 1.35));
     });
 
-    rect(44, 509, 401, 121, 1.45);
-    text(244, 661, "Подпись принимающей стороны либо", 20, 400, "middle");
-    text(244, 689, "иностранного гражданина или лица без", 20, 400, "middle");
-    text(244, 717, "гражданства, в случаях, предусмотренных", 20, 400, "middle");
-    text(244, 745, "частями 3¹, 3², 4 статьи 22 Федерального", 20, 400, "middle");
-    text(244, 773, "закона \"О миграционном учете иностранных", 20, 400, "middle");
-    text(244, 801, "граждан и лиц без гражданства", 20, 400, "middle");
-    text(244, 829, "в Российской Федерации\"", 20, 400, "middle");
+    rect(109, 710, 560, 169, 1.45);
+    text(389, 922, "Подпись принимающей стороны либо", 20, 400, "middle");
+    text(389, 950, "иностранного гражданина или лица без", 20, 400, "middle");
+    text(389, 978, "гражданства, в случаях, предусмотренных", 20, 400, "middle");
+    text(389, 1006, "частями 3¹, 3², 4 статьи 22 Федерального", 20, 400, "middle");
+    text(389, 1034, "закона \"О миграционном учете иностранных", 20, 400, "middle");
+    text(389, 1062, "граждан и лиц без гражданства", 20, 400, "middle");
+    text(389, 1090, "в Российской Федерации\"", 20, 400, "middle");
 
-    rect(44, 891, 401, 229, 1.45);
-    text(244, 1150, "Печать организации", 20, 400, "middle");
-    text(244, 1178, "(при наличии)", 20, 400, "middle");
+    rect(109, 1244, 560, 320, 1.45);
+    text(389, 1605, "Печать организации", 20, 400, "middle");
+    text(389, 1633, "(при наличии)", 20, 400, "middle");
 
-    text(791, 981, "Отметка о подтверждении выполнения принимающей", 19, 400, "middle");
-    text(791, 1009, "стороной и иностранным гражданином или лицом без", 19, 400, "middle");
-    text(791, 1037, "гражданства действий, необходимых для его постановки", 19, 400, "middle");
-    text(791, 1065, "на учет по месту пребывания", 19, 400, "middle");
+    text(1110, 1370, "Отметка о подтверждении выполнения принимающей", 19, 400, "middle");
+    text(1110, 1398, "стороной и иностранным гражданином или лицом без", 19, 400, "middle");
+    text(1110, 1426, "гражданства действий, необходимых для его постановки", 19, 400, "middle");
+    text(1110, 1454, "на учет по месту пребывания", 19, 400, "middle");
 
-    text(580, 1277, "ОТРЫВНАЯ ЧАСТЬ БЛАНКА УВЕДОМЛЕНИЯ О ПРИБЫТИИ ИНОСТРАННОГО ГРАЖДАНИНА", 21, 400, "middle");
-    text(580, 1308, "ИЛИ ЛИЦА БЕЗ ГРАЖДАНСТВА В МЕСТО ПРЕБЫВАНИЯ", 21, 400, "middle");
+    text(768, 1776, "ОТРЫВНАЯ ЧАСТЬ БЛАНКА УВЕДОМЛЕНИЯ О ПРИБЫТИИ ИНОСТРАННОГО ГРАЖДАНИНА", 21, 400, "middle");
+    text(768, 1807, "ИЛИ ЛИЦА БЕЗ ГРАЖДАНСТВА В МЕСТО ПРЕБЫВАНИЯ", 21, 400, "middle");
 
     page2.insertBefore(svg, overlay2);
   }
@@ -579,7 +590,7 @@
 
     const horizontalPadding = isMobile ? 24 : 56;
     const available = Math.max(320, stage.clientWidth - horizontalPadding);
-    const targetWidth = PAGE1_W;
+    const targetWidth = currentPage === 1 ? PAGE1_W : PAGE2_W;
     applyScale(Math.min(1, available / targetWidth));
   }
 
