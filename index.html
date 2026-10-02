@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Form Editor</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="toolbar" id="toolbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><i data-lucide="file-pen-line"></i></div>
+      <div>
+        <strong>Form Editor</strong>
+        <span id="fieldStatus">Toca una casilla para escribir</span>
+      </div>
+    </div>
+
+    <div class="toolbar-actions">
+      <div class="zoom-group" aria-label="Zoom">
+        <button class="icon-btn" id="zoomOut" type="button" aria-label="Alejar"><i data-lucide="minus"></i></button>
+        <button class="zoom-value" id="zoomValue" type="button" aria-label="Ajustar a pantalla">100%</button>
+        <button class="icon-btn" id="zoomIn" type="button" aria-label="Acercar"><i data-lucide="plus"></i></button>
+      </div>
+
+      <button class="ghost-btn" id="clearBtn" type="button">
+        <i data-lucide="eraser"></i>
+        <span>Borrar</span>
+      </button>
+
+      <button class="done-btn" id="doneBtn" type="button">
+        <i data-lucide="check"></i>
+        <span>Listo</span>
+      </button>
+    </div>
+  </header>
+
+  <header class="preview-toolbar" id="previewToolbar" aria-hidden="true">
+    <button class="ghost-btn" id="editBtn" type="button">
+      <i data-lucide="pencil"></i>
+      <span>Editar</span>
+    </button>
+    <div class="preview-title">Resultado</div>
+    <button class="ghost-btn" id="printBtn" type="button">
+      <i data-lucide="printer"></i>
+      <span>Imprimir / PDF</span>
+    </button>
+  </header>
+
+  <main class="stage" id="stage">
+    <div class="page-shell" id="pageShell">
+      <section class="page" id="formPage" aria-label="Formulario ruso editable">
+        <div class="form-overlay" id="overlay"></div>
+      </section>
+    </div>
+  </main>
+
+  <div class="hint" id="hint">
+    <i data-lucide="mouse-pointer-2"></i>
+    <span>Escribe directamente sobre las casillas. Los datos se guardan en este dispositivo.</span>
+  </div>
+</body>
+</html>
