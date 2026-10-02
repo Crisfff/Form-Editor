@@ -173,9 +173,7 @@
     text(665, 1003, "месяц", 18);
     text(839, 1003, "год", 18);
 
-    drawStaticForm();
-
-  fields.forEach(field => {
+    fields.forEach(field => {
       if (field.kind === "slots") {
         field.xs.forEach(x => rect(x, field.y));
       } else if (field.kind === "text") {
@@ -200,6 +198,8 @@
   let scale = 1;
   let manualZoom = false;
   const controls = new Map();
+
+  drawStaticForm();
 
   try {
     values = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {};
