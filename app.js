@@ -64,6 +64,130 @@
     { id: "stayYear", label: "Срок пребывания · Año", kind: "slots", xs: [883,921,959,997], y: 979, numeric: true }
   ];
 
+
+  function drawStaticForm() {
+    const NS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(NS, "svg");
+    svg.classList.add("form-paper");
+    svg.setAttribute("viewBox", "0 0 1536 1024");
+    svg.setAttribute("aria-hidden", "true");
+
+    const add = (name, attrs = {}, value = "") => {
+      const el = document.createElementNS(NS, name);
+      Object.entries(attrs).forEach(([key, val]) => el.setAttribute(key, String(val)));
+      if (value) el.textContent = value;
+      svg.appendChild(el);
+      return el;
+    };
+
+    const text = (x, y, value, size = 20, weight = 400, anchor = "start") =>
+      add("text", {
+        x, y,
+        "font-family": '"Tinos","Times New Roman",serif',
+        "font-size": size,
+        "font-weight": weight,
+        "text-anchor": anchor,
+        fill: "#000"
+      }, value);
+
+    const rect = (x, y, w = BOX_W, h = BOX_H) =>
+      add("rect", {
+        x, y, width: w, height: h,
+        fill: "none",
+        stroke: "#000",
+        "stroke-width": 1.35,
+        "shape-rendering": "geometricPrecision"
+      });
+
+    const dashed = (x1, x2, y) =>
+      add("line", {
+        x1, y1: y, x2, y2: y,
+        stroke: "#000",
+        "stroke-width": 3,
+        "stroke-dasharray": "10 6"
+      });
+
+    dashed(110, 680, 30);
+    dashed(855, 1428, 30);
+    text(768, 37, "Линия отрыва", 20, 400, "middle");
+
+    text(109, 63, "Настоящим подтверждается, что", 20);
+    text(109, 101, "Фамилия", 20);
+    text(109, 141, "Имя", 20);
+    text(109, 181, "Отчество (при наличии)", 20);
+    text(109, 221, "Гражданство / подданство", 20);
+
+    text(109, 260, "Дата рождения:", 20);
+    text(272, 260, "число", 18);
+    text(442, 260, "месяц", 18);
+    text(612, 260, "год", 18);
+    text(922, 260, "Пол:", 20);
+    text(1014, 260, "мужской", 18);
+    text(1223, 260, "женский", 18);
+
+    text(109, 298, "Документ, удостоверяющий личность:", 20);
+    text(109, 329, "вид", 20);
+    text(814, 329, "№", 20);
+    text(109, 369, "Дата выдачи:", 20);
+    text(241, 369, "число", 18);
+    text(389, 369, "месяц", 18);
+    text(542, 369, "год", 18);
+    text(803, 369, "Срок действия до:", 20);
+    text(963, 369, "число", 18);
+    text(1113, 369, "месяц", 18);
+    text(1256, 369, "год", 18);
+
+    text(257, 416, "(в случае ограничения срока действия документа)", 17);
+    text(109, 442, "в установленном порядке уведомил о прибытии в место пребывания по адресу:", 19);
+    text(109, 473, "субъект Российской Федерации", 20);
+    text(109, 514, "район", 20);
+    text(289, 540, "(при наличии)", 16);
+
+    text(109, 562, "городской округ (при наличии), внутригородской район (при наличии), населенный пункт", 18);
+    text(109, 634, "улица", 20);
+    text(326, 654, "(при наличии)", 16);
+
+    text(109, 679, "дом", 20);
+    text(407, 679, "здание, строение, сооружение", 18);
+    text(969, 679, "корпус", 18);
+    text(1151, 679, "строение", 18);
+    text(109, 722, "квартира", 20);
+    text(388, 722, "представленных в пределах квартиры (при наличии)", 17);
+
+    text(109, 752, "Кадастровый номер (при наличии), помещение в пределах квартиры (при наличии),", 16);
+    text(109, 770, "кадастровый номер (при наличии), жилое или нежилое помещение в", 16);
+    text(109, 788, "пределах здания (сооружения) в случае, предусмотренном Федеральным законом", 16);
+
+    text(109, 816, "фактическое место проживания (в случае, если место пребывания не совпадает с адресом места пребывания,", 15);
+    text(109, 834, "указанным в документе, удостоверяющем личность (в том числе временном)),", 15);
+    text(109, 852, "оказываемые гостиничные услуги)", 15);
+
+    text(109, 884, "строение иное использование (в случае, если место пребывания не совпадает с адресом места пребывания,", 15);
+    text(109, 902, "указанным в документе, удостоверяющем личность (в том числе временном))", 15);
+
+    text(109, 929, "городское и сельское поселение (при наличии), внутригородской район (при наличии)", 17);
+    text(109, 965, "Кадастровый номер земельного участка (при наличии)", 18);
+
+    text(109, 1003, "Заявленный срок пребывания до:", 20);
+    text(494, 1003, "число", 18);
+    text(665, 1003, "месяц", 18);
+    text(839, 1003, "год", 18);
+
+    drawStaticForm();
+
+  fields.forEach(field => {
+      if (field.kind === "slots") {
+        field.xs.forEach(x => rect(x, field.y));
+      } else if (field.kind === "text") {
+        rect(field.x, field.y, field.w, field.h);
+      } else if (field.kind === "choice") {
+        field.choices.forEach(choice => rect(choice.x, choice.y));
+      }
+    });
+
+    formPage.insertBefore(svg, overlay);
+  }
+
   const overlay = document.getElementById("overlay");
   const page = document.getElementById("formPage");
   const shell = document.getElementById("pageShell");
