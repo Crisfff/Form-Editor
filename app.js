@@ -298,7 +298,18 @@
 
   function fitToWidth(force = false) {
     if (manualZoom && !force) return;
-    const horizontalPadding = window.innerWidth <= 760 ? 24 : 56;
+
+    const isMobile = window.innerWidth <= 760;
+    const isResult = document.body.classList.contains("result-mode");
+
+    // En móvil no encogemos todo el formulario durante la edición.
+    // El documento queda a un tamaño legible y se recorre horizontalmente.
+    if (isMobile && !isResult) {
+      applyScale(.72);
+      return;
+    }
+
+    const horizontalPadding = isMobile ? 24 : 56;
     const available = Math.max(320, stage.clientWidth - horizontalPadding);
     const next = Math.min(1, available / PAGE_W);
     applyScale(next);
