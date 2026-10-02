@@ -70,12 +70,12 @@
   ];
 
   const fields2 = [
-    { page: 2, id: "p2Surname", label: "Página 2 · Фамилия · Apellido", kind: "slots", xs: seq(145, 28, 33), y: 165, boxW: 29, boxH: 35 },
-    { page: 2, id: "p2Name", label: "Página 2 · Имя · Nombre", kind: "slots", xs: seq(145, 28, 33), y: 213, boxW: 29, boxH: 35 },
-    { page: 2, id: "p2Patronymic", label: "Página 2 · Отчество", kind: "slots", xs: seq(218, 26, 33), y: 261, boxW: 29, boxH: 35 },
-    { page: 2, id: "p2Organization1", label: "Página 2 · Наименование организации", kind: "slots", xs: seq(218, 26, 33), y: 329, boxW: 29, boxH: 35 },
-    { page: 2, id: "p2Organization2", label: "Página 2 · Наименование организации, продолжение", kind: "slots", xs: seq(33, 16, 37), y: 407, boxW: 29, boxH: 35 },
-    { page: 2, id: "p2Inn", label: "Página 2 · ИНН", kind: "slots", xs: seq(676, 12, 33), y: 407, boxW: 29, boxH: 35, numeric: true }
+    { page: 2, id: "p2Surname", label: "Página 2 · Фамилия · Apellido", kind: "slots", xs: seq(145, 28, 33), y: 165, boxW: 33, boxH: 31 },
+    { page: 2, id: "p2Name", label: "Página 2 · Имя · Nombre", kind: "slots", xs: seq(145, 28, 33), y: 213, boxW: 33, boxH: 31 },
+    { page: 2, id: "p2Patronymic", label: "Página 2 · Отчество", kind: "slots", xs: seq(218, 26, 33), y: 261, boxW: 33, boxH: 31 },
+    { page: 2, id: "p2Organization1", label: "Página 2 · Наименование организации", kind: "slots", xs: seq(218, 26, 33), y: 329, boxW: 33, boxH: 31 },
+    { page: 2, id: "p2Organization2", label: "Página 2 · Наименование организации, продолжение", kind: "slots", xs: seq(33, 16, 37), y: 407, boxW: 33, boxH: 31 },
+    { page: 2, id: "p2Inn", label: "Página 2 · ИНН", kind: "slots", xs: seq(676, 12, 33), y: 407, boxW: 33, boxH: 31, numeric: true }
   ];
 
   const allFields = [...fields, ...fields2];
@@ -232,17 +232,17 @@
     text(550, 103, "предусмотренном частью 3¹ статьи 22 Федерального закона \"О миграционном учете иностранных", 20, 700, "middle");
     text(550, 132, "граждан и лиц без гражданства в Российской Федерации\"", 20, 700, "middle");
 
-    text(31, 192, "Фамилия", 21);
-    text(31, 240, "Имя", 21);
-    text(31, 287, "Отчество", 21);
-    text(31, 311, "(при их наличии)", 19);
-    text(31, 351, "Наименование", 21);
-    text(31, 379, "организации", 21);
-    text(613, 434, "ИНН", 21);
+    text(31, 192, "Фамилия", 20);
+    text(31, 240, "Имя", 20);
+    text(31, 287, "Отчество", 20);
+    text(31, 311, "(при их наличии)", 18);
+    text(31, 351, "Наименование", 20);
+    text(31, 379, "организации", 20);
+    text(613, 434, "ИНН", 20);
 
     fields2.forEach(field => {
-      const bw = field.boxW || 29;
-      const bh = field.boxH || 35;
+      const bw = field.boxW || BOX_W;
+      const bh = field.boxH || BOX_H;
       field.xs.forEach(x => rect(x, field.y, bw, bh, 1.35));
     });
 
@@ -339,7 +339,7 @@
       span.style.top = "0";
       span.style.width = bw + "px";
       span.style.height = bh + "px";
-      span.style.fontSize = field.page === 2 ? "24px" : "25px";
+      span.style.fontSize = "25px";
       chars.appendChild(span);
       return span;
     });
@@ -516,13 +516,13 @@
     const isResult = document.body.classList.contains("result-mode");
 
     if (isMobile && !isResult) {
-      applyScale(currentPage === 1 ? .72 : .78);
+      applyScale(.72);
       return;
     }
 
     const horizontalPadding = isMobile ? 24 : 56;
     const available = Math.max(320, stage.clientWidth - horizontalPadding);
-    const targetWidth = isResult ? PAGE1_W : (currentPage === 1 ? PAGE1_W : PAGE2_W);
+    const targetWidth = PAGE1_W;
     applyScale(Math.min(1, available / targetWidth));
   }
 
