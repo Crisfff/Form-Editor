@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#ffffff" />
   <title>Form Editor</title>
-  <link rel="stylesheet" href="styles.css?v=4" />
+  <link rel="stylesheet" href="styles.css?v=5" />
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
-  <script src="app.js?v=7" defer></script>
+  <script src="app.js?v=8" defer></script>
 </head>
 <body>
   <header class="toolbar" id="toolbar">
@@ -20,6 +20,12 @@
     </div>
 
     <div class="toolbar-actions">
+      <div class="page-nav" aria-label="Páginas">
+        <button class="icon-btn" id="prevPage" type="button" aria-label="Página anterior"><i data-lucide="chevron-left"></i></button>
+        <button class="page-indicator" id="pageIndicator" type="button" aria-label="Página actual">1 / 2</button>
+        <button class="icon-btn" id="nextPage" type="button" aria-label="Página siguiente"><i data-lucide="chevron-right"></i></button>
+      </div>
+
       <div class="zoom-group" aria-label="Zoom">
         <button class="icon-btn" id="zoomOut" type="button" aria-label="Alejar"><i data-lucide="minus"></i></button>
         <button class="zoom-value" id="zoomValue" type="button" aria-label="Ajustar a pantalla">100%</button>
@@ -51,9 +57,15 @@
   </header>
 
   <main class="stage" id="stage">
-    <div class="page-shell" id="pageShell">
-      <section class="page" id="formPage" aria-label="Formulario ruso editable">
+    <div class="page-shell page-shell-one" id="pageShell">
+      <section class="page page-one" id="formPage" aria-label="Formulario ruso editable, página 1">
         <div class="form-overlay" id="overlay"></div>
+      </section>
+    </div>
+
+    <div class="page-shell page-shell-two is-hidden" id="pageShell2">
+      <section class="page page-two" id="formPage2" aria-label="Formulario ruso editable, página 2">
+        <div class="form-overlay" id="overlay2"></div>
       </section>
     </div>
   </main>
