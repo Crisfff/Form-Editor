@@ -204,10 +204,6 @@ button {
   transform: scale(var(--scale));
   transform-origin: top left;
   background-color: #fff;
-  background-image: url("assets/form-template.png?v=2");
-  image-rendering: auto;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
   box-shadow: 0 18px 52px rgba(0,0,0,.12);
   user-select: none;
 }
@@ -483,4 +479,21 @@ body:not(.result-mode) .choice-field.active::after {
   .brand span {
     max-width: 190px;
   }
+}
+
+
+.form-paper {
+  position: absolute;
+  inset: 0;
+  width: 1536px;
+  height: 1024px;
+  display: block;
+  background: #fff;
+  pointer-events: none;
+  z-index: 0;
+  text-rendering: geometricPrecision;
+}
+
+.form-overlay {
+  z-index: 2;
 }
