@@ -448,3 +448,38 @@ body:not(.result-mode) .choice-field.active::after {
     box-shadow: none !important;
   }
 }
+
+/* Mobile document workspace: keep the sheet readable and let the user pan it */
+@media (max-width: 760px) {
+  .stage {
+    padding: 14px 0 96px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .page-shell {
+    margin-left: 14px;
+    margin-right: 14px;
+  }
+
+  .page {
+    image-rendering: auto;
+  }
+
+  .toolbar {
+    gap: 8px;
+  }
+
+  .brand {
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  .brand strong {
+    font-size: 15px;
+  }
+
+  .brand span {
+    max-width: 190px;
+  }
+}
