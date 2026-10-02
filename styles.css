@@ -204,7 +204,8 @@ button {
   transform: scale(var(--scale));
   transform-origin: top left;
   background-color: #fff;
-  background-image: url("assets/form-template.png");
+  background-image: url("assets/form-template.png?v=2");
+  image-rendering: auto;
   background-size: 100% 100%;
   background-repeat: no-repeat;
   box-shadow: 0 18px 52px rgba(0,0,0,.12);
