@@ -215,8 +215,8 @@ button {
 }
 
 .page-shell-two {
-  width: calc(1160px * var(--scale));
-  height: calc(1376px * var(--scale));
+  width: calc(1536px * var(--scale));
+  height: calc(1921px * var(--scale));
 }
 
 .page-shell.is-hidden {
@@ -531,13 +531,13 @@ body:not(.result-mode) .choice-field.active::after {
 }
 
 .page-two {
-  width: 1160px;
-  height: 1376px;
+  width: 1536px;
+  height: 1921px;
 }
 
 .form-paper.page-two-paper {
-  width: 1160px;
-  height: 1376px;
+  width: 1536px;
+  height: 1921px;
 }
 
 .result-mode .page-shell {
