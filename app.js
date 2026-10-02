@@ -185,7 +185,7 @@
       }
     });
 
-    formPage.insertBefore(svg, overlay);
+    page.insertBefore(svg, overlay);
   }
 
   const overlay = document.getElementById("overlay");
