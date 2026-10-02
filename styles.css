@@ -661,17 +661,17 @@ body:not(.result-mode) .choice-field.active::after {
 }
 
 .signature-media {
-  left: 121px;
-  top: 722px;
-  width: 536px;
-  height: 145px;
+  left: 123px;
+  top: 772px;
+  width: 472px;
+  height: 126px;
 }
 
 .stamp-media {
-  left: 830px;
-  top: 720px;
-  width: 586px;
-  height: 386px;
+  left: 778px;
+  top: 768px;
+  width: 631px;
+  height: 394px;
 }
 
 @media (max-width: 760px) {
