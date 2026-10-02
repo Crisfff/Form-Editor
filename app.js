@@ -159,6 +159,11 @@
   const zoomValue = document.getElementById("zoomValue");
   const previewToolbar = document.getElementById("previewToolbar");
   const pageIndicator = document.getElementById("pageIndicator");
+  const page2Tools = document.getElementById("page2Tools");
+  const signatureBtn = document.getElementById("signatureBtn");
+  const stampBtn = document.getElementById("stampBtn");
+  const signatureInput = document.getElementById("signatureInput");
+  const stampInput = document.getElementById("stampInput");
 
   let values = {};
   let scale = 1;
@@ -314,7 +319,11 @@
       field.xs.forEach(x => rect(x, field.y, bw, bh, 1.35));
     });
 
+    // Firma, cuño oficial y sello de la organización.
     rect(109, 710, 560, 169, 1.45);
+
+    rect(817, 708, 610, 410, 1.45);
+
     text(389, 922, "Подпись принимающей стороны либо", 20, 400, "middle");
     text(389, 950, "иностранного гражданина или лица без", 20, 400, "middle");
     text(389, 978, "гражданства, в случаях, предусмотренных", 20, 400, "middle");
@@ -323,14 +332,14 @@
     text(389, 1062, "граждан и лиц без гражданства", 20, 400, "middle");
     text(389, 1090, "в Российской Федерации\"", 20, 400, "middle");
 
+    text(1122, 1162, "Отметка о подтверждении выполнения принимающей", 19, 400, "middle");
+    text(1122, 1190, "стороной и иностранным гражданином или лицом без", 19, 400, "middle");
+    text(1122, 1218, "гражданства действий, необходимых для его постановки", 19, 400, "middle");
+    text(1122, 1246, "на учет по месту пребывания", 19, 400, "middle");
+
     rect(109, 1244, 560, 320, 1.45);
     text(389, 1605, "Печать организации", 20, 400, "middle");
     text(389, 1633, "(при наличии)", 20, 400, "middle");
-
-    text(1110, 1370, "Отметка о подтверждении выполнения принимающей", 19, 400, "middle");
-    text(1110, 1398, "стороной и иностранным гражданином или лицом без", 19, 400, "middle");
-    text(1110, 1426, "гражданства действий, необходимых для его постановки", 19, 400, "middle");
-    text(1110, 1454, "на учет по месту пребывания", 19, 400, "middle");
 
     text(768, 1776, "ОТРЫВНАЯ ЧАСТЬ БЛАНКА УВЕДОМЛЕНИЯ О ПРИБЫТИИ ИНОСТРАННОГО ГРАЖДАНИНА", 21, 400, "middle");
     text(768, 1807, "ИЛИ ЛИЦА БЕЗ ГРАЖДАНСТВА В МЕСТО ПРЕБЫВАНИЯ", 21, 400, "middle");
@@ -339,7 +348,84 @@
   }
 
   function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
+    } catch (error) {
+      console.warn("No se pudo guardar todo en el almacenamiento local.", error);
+    }
+  }
+
+  function ensurePlacedImage(id, className) {
+    let img = document.getElementById(id);
+    if (!img) {
+      img = document.createElement("img");
+      img.id = id;
+      img.className = "placed-media " + className;
+      img.alt = "";
+      img.draggable = false;
+      overlay2.appendChild(img);
+    }
+    return img;
+  }
+
+  function renderPlacedMedia() {
+    const signature = ensurePlacedImage("signaturePreview", "signature-media");
+    const stamp = ensurePlacedImage("stampPreview", "stamp-media");
+
+    signature.src = values.p2SignatureImage || "";
+    signature.hidden = !values.p2SignatureImage;
+
+    stamp.src = values.p2StampImage || "";
+    stamp.hidden = !values.p2StampImage;
+  }
+
+  function compressImageFile(file, maxWidth = 1100, maxHeight = 900, quality = 0.84) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onerror = () => reject(new Error("No se pudo leer la imagen."));
+      reader.onload = () => {
+        const img = new Image();
+
+        img.onerror = () => reject(new Error("La imagen no es válida."));
+        img.onload = () => {
+          const ratio = Math.min(1, maxWidth / img.naturalWidth, maxHeight / img.naturalHeight);
+          const width = Math.max(1, Math.round(img.naturalWidth * ratio));
+          const height = Math.max(1, Math.round(img.naturalHeight * ratio));
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#fff";
+          ctx.fillRect(0, 0, width, height);
+          ctx.drawImage(img, 0, 0, width, height);
+
+          resolve(canvas.toDataURL("image/jpeg", quality));
+        };
+
+        img.src = String(reader.result);
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function handleMediaUpload(input, storageKey) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    try {
+      const dataUrl = await compressImageFile(file);
+      values[storageKey] = dataUrl;
+      save();
+      renderPlacedMedia();
+    } catch (error) {
+      alert(error.message || "No se pudo cargar la imagen.");
+    } finally {
+      input.value = "";
+    }
   }
 
   function normalizeValue(value, numeric = false) {
@@ -361,6 +447,7 @@
     shell.classList.toggle("is-hidden", currentPage !== 1);
     shell2.classList.toggle("is-hidden", currentPage !== 2);
     pageIndicator.textContent = currentPage + " / 2";
+    page2Tools.classList.toggle("is-hidden", currentPage !== 2 || document.body.classList.contains("result-mode"));
     setStatus("Página " + currentPage + " de 2");
     stage.scrollTo({ top: 0, left: 0, behavior: "auto" });
     if (!keepZoom) {
@@ -598,7 +685,14 @@
   drawSecondForm();
   buildFieldSet(fields, overlay);
   buildFieldSet(fields2, overlay2);
+  renderPlacedMedia();
   showPage(1);
+
+  signatureBtn.addEventListener("click", () => signatureInput.click());
+  stampBtn.addEventListener("click", () => stampInput.click());
+
+  signatureInput.addEventListener("change", () => handleMediaUpload(signatureInput, "p2SignatureImage"));
+  stampInput.addEventListener("change", () => handleMediaUpload(stampInput, "p2StampImage"));
 
   document.getElementById("prevPage").addEventListener("click", () => showPage(currentPage === 1 ? 2 : 1));
   document.getElementById("nextPage").addEventListener("click", () => showPage(currentPage === 1 ? 2 : 1));
@@ -622,6 +716,7 @@
   document.getElementById("doneBtn").addEventListener("click", () => {
     clearActive();
     document.body.classList.add("result-mode");
+    page2Tools.classList.add("is-hidden");
     previewToolbar.setAttribute("aria-hidden", "false");
     shell.classList.remove("is-hidden");
     shell2.classList.remove("is-hidden");
