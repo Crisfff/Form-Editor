@@ -98,6 +98,8 @@ button {
   gap: 8px;
 }
 
+.page-nav,
+.page-nav,
 .zoom-group {
   height: 40px;
   display: flex;
@@ -106,6 +108,20 @@ button {
   border-radius: 12px;
   overflow: hidden;
   background: #fff;
+}
+
+.page-indicator {
+  min-width: 58px;
+  height: 38px;
+  padding: 0 10px;
+  border: 0;
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  background: transparent;
+  color: #444;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .icon-btn,
@@ -191,16 +207,26 @@ button {
 .page-shell {
   position: relative;
   margin: 0 auto 70px;
+}
+
+.page-shell-one {
   width: calc(1536px * var(--scale));
   height: calc(1024px * var(--scale));
+}
+
+.page-shell-two {
+  width: calc(1100px * var(--scale));
+  height: calc(1376px * var(--scale));
+}
+
+.page-shell.is-hidden {
+  display: none;
 }
 
 .page {
   position: absolute;
   top: 0;
   left: 0;
-  width: 1536px;
-  height: 1024px;
   transform: scale(var(--scale));
   transform-origin: top left;
   background-color: #fff;
@@ -496,4 +522,78 @@ body:not(.result-mode) .choice-field.active::after {
 
 .form-overlay {
   z-index: 2;
+}
+
+
+.page-one {
+  width: 1536px;
+  height: 1024px;
+}
+
+.page-two {
+  width: 1100px;
+  height: 1376px;
+}
+
+.form-paper.page-two-paper {
+  width: 1100px;
+  height: 1376px;
+}
+
+.result-mode .page-shell {
+  display: block !important;
+  break-after: page;
+}
+
+.result-mode .page-shell:last-child {
+  break-after: auto;
+}
+
+.result-mode .page-shell-two {
+  margin-top: 26px;
+}
+
+@media (max-width: 760px) {
+  .page-nav {
+    display: flex;
+  }
+
+  .page-indicator {
+    min-width: 50px;
+    padding-inline: 8px;
+  }
+
+  .toolbar-actions {
+    gap: 6px;
+  }
+
+  .page-shell-two {
+    margin-left: 14px;
+    margin-right: 14px;
+  }
+}
+
+@media print {
+  .page-shell {
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  .page-one {
+    page: firstform;
+  }
+
+  .page-two {
+    page: secondform;
+  }
+
+  @page firstform {
+    size: landscape;
+    margin: 0;
+  }
+
+  @page secondform {
+    size: portrait;
+    margin: 0;
+  }
 }
