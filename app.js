@@ -915,7 +915,7 @@
 
         // Combine both editor pages into ONE continuous PDF page,
         // keeping the same top-to-bottom order and proportions seen in the editor.
-        const gapPx = 48 * 1.5;
+        const gapPx = 72 * 1.5;
         const combinedWidth = Math.max(canvas1.width, canvas2.width);
         const combinedHeight = canvas1.height + gapPx + canvas2.height;
 
@@ -931,6 +931,23 @@
         const x2 = (combinedWidth - canvas2.width) / 2;
 
         ctx.drawImage(canvas1, x1, 0);
+
+        // Black dashed divider between page 1 and page 2.
+        const dividerY = canvas1.height + gapPx / 2;
+        const dividerMargin = combinedWidth * 0.07;
+        ctx.save();
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = Math.max(2, combinedWidth * 0.0015);
+        ctx.setLineDash([
+          Math.max(16, combinedWidth * 0.018),
+          Math.max(10, combinedWidth * 0.010)
+        ]);
+        ctx.beginPath();
+        ctx.moveTo(dividerMargin, dividerY);
+        ctx.lineTo(combinedWidth - dividerMargin, dividerY);
+        ctx.stroke();
+        ctx.restore();
+
         ctx.drawImage(canvas2, x2, canvas1.height + gapPx);
 
         // Custom single-sheet size with the exact combined editor aspect ratio.
