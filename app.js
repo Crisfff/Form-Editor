@@ -580,6 +580,14 @@
     input.value = values[field.id] || "";
     input.setAttribute("aria-label", field.label);
 
+    // The house-number box is slightly taller than the generic text baseline.
+    // Center its value vertically so it sits like the characters in the square fields.
+    if (field.id === "house") {
+      input.style.lineHeight = field.h + "px";
+      input.style.paddingTop = "3px";
+      input.style.paddingBottom = "0";
+    }
+
     input.addEventListener("focus", () => {
       clearActive();
       root.classList.add("active");
