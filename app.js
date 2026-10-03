@@ -731,28 +731,131 @@
     fitToWidth(true);
   });
 
-  async function printPdf() {
-    shell.classList.remove("is-hidden");
-    shell2.classList.remove("is-hidden");
+  function waitForImage(img) {
+    if (!img || !img.src || img.hidden) return Promise.resolve();
+    if (typeof img.decode === "function") {
+      return img.decode().catch(() => undefined);
+    }
+    if (img.complete) return Promise.resolve();
+    return new Promise(resolve => {
+      img.addEventListener("load", resolve, { once: true });
+      img.addEventListener("error", resolve, { once: true });
+    });
+  }
 
-    if (document.fonts && document.fonts.ready) {
-      try { await document.fonts.ready; } catch {}
+  function makePdfCapture(sourcePage, width, height) {
+    const host = document.createElement("div");
+    host.style.position = "fixed";
+    host.style.left = "-20000px";
+    host.style.top = "0";
+    host.style.width = width + "px";
+    host.style.height = height + "px";
+    host.style.background = "#fff";
+    host.style.overflow = "hidden";
+    host.style.zIndex = "-1";
+
+    const clone = sourcePage.cloneNode(true);
+    clone.removeAttribute("id");
+    clone.style.position = "relative";
+    clone.style.left = "0";
+    clone.style.top = "0";
+    clone.style.width = width + "px";
+    clone.style.height = height + "px";
+    clone.style.transform = "none";
+    clone.style.transformOrigin = "top left";
+    clone.style.boxShadow = "none";
+    clone.style.margin = "0";
+    clone.style.background = "#fff";
+
+    clone.querySelectorAll(".active").forEach(el => el.classList.remove("active"));
+
+    host.appendChild(clone);
+    document.body.appendChild(host);
+
+    return { host, clone };
+  }
+
+  function addCanvasToPdf(pdf, canvas, pageWidthMm, pageHeightMm) {
+    const image = canvas.toDataURL("image/jpeg", 0.94);
+    const ratio = Math.min(pageWidthMm / canvas.width, pageHeightMm / canvas.height);
+    const drawWidth = canvas.width * ratio;
+    const drawHeight = canvas.height * ratio;
+    const x = (pageWidthMm - drawWidth) / 2;
+    const y = (pageHeightMm - drawHeight) / 2;
+    pdf.addImage(image, "JPEG", x, y, drawWidth, drawHeight, undefined, "FAST");
+  }
+
+  async function printPdf() {
+    const button = document.getElementById("printBtn");
+
+    if (!window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) {
+      alert("No se pudieron cargar los componentes necesarios para crear el PDF. Recarga la página e inténtalo de nuevo.");
+      return;
     }
 
-    const images = Array.from(page.querySelectorAll("img")).concat(Array.from(page2.querySelectorAll("img")));
-    await Promise.all(images.map(img => {
-      if (!img.src || img.hidden) return Promise.resolve();
-      if (typeof img.decode === "function") {
-        return img.decode().catch(() => undefined);
-      }
-      if (img.complete) return Promise.resolve();
-      return new Promise(resolve => {
-        img.addEventListener("load", resolve, { once: true });
-        img.addEventListener("error", resolve, { once: true });
-      });
-    }));
+    const previousText = button.querySelector("span")?.textContent || "Descargar PDF";
+    button.disabled = true;
+    if (button.querySelector("span")) button.querySelector("span").textContent = "Generando…";
 
-    window.print();
+    try {
+      if (document.fonts && document.fonts.ready) {
+        try { await document.fonts.ready; } catch {}
+      }
+
+      const images = Array.from(page.querySelectorAll("img")).concat(Array.from(page2.querySelectorAll("img")));
+      await Promise.all(images.map(waitForImage));
+
+      const capture1 = makePdfCapture(page, PAGE1_W, PAGE1_H);
+      const capture2 = makePdfCapture(page2, PAGE2_W, PAGE2_H);
+
+      try {
+        const canvas1 = await window.html2canvas(capture1.clone, {
+          backgroundColor: "#ffffff",
+          scale: 1.5,
+          width: PAGE1_W,
+          height: PAGE1_H,
+          useCORS: true,
+          logging: false,
+          scrollX: 0,
+          scrollY: 0
+        });
+
+        const canvas2 = await window.html2canvas(capture2.clone, {
+          backgroundColor: "#ffffff",
+          scale: 1.5,
+          width: PAGE2_W,
+          height: PAGE2_H,
+          useCORS: true,
+          logging: false,
+          scrollX: 0,
+          scrollY: 0
+        });
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: "landscape",
+          unit: "mm",
+          format: "a4",
+          compress: true
+        });
+
+        addCanvasToPdf(pdf, canvas1, 297, 210);
+
+        pdf.addPage("a4", "portrait");
+        addCanvasToPdf(pdf, canvas2, 210, 297);
+
+        pdf.save("Form-Editor.pdf");
+      } finally {
+        capture1.host.remove();
+        capture2.host.remove();
+      }
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo generar el PDF. Recarga la página e inténtalo nuevamente.");
+    } finally {
+      button.disabled = false;
+      if (button.querySelector("span")) button.querySelector("span").textContent = previousText;
+    }
   }
 
   document.getElementById("printBtn").addEventListener("click", printPdf);
