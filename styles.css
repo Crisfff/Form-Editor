@@ -442,36 +442,6 @@ body:not(.result-mode) .choice-field.active::after {
   }
 }
 
-@media print {
-  @page { size: landscape; margin: 0; }
-
-  html, body {
-    background: #fff !important;
-    overflow: visible !important;
-  }
-
-  .toolbar,
-  .preview-toolbar,
-  .hint {
-    display: none !important;
-  }
-
-  .stage {
-    position: static !important;
-    padding: 0 !important;
-    overflow: visible !important;
-    background: #fff !important;
-  }
-
-  .page-shell {
-    margin: 0 !important;
-  }
-
-  .page {
-    box-shadow: none !important;
-  }
-}
-
 /* Mobile document workspace: keep the sheet readable and let the user pan it */
 @media (max-width: 760px) {
   .stage {
@@ -573,31 +543,6 @@ body:not(.result-mode) .choice-field.active::after {
   }
 }
 
-@media print {
-  .page-shell {
-    display: block !important;
-    margin: 0 !important;
-  }
-
-  .page-one {
-    page: firstform;
-  }
-
-  .page-two {
-    page: secondform;
-  }
-
-  @page firstform {
-    size: landscape;
-    margin: 0;
-  }
-
-  @page secondform {
-    size: portrait;
-    margin: 0;
-  }
-}
-
 
 .hidden-file-input {
   position: fixed;
@@ -687,8 +632,124 @@ body:not(.result-mode) .choice-field.active::after {
   }
 }
 
+
+
+/* PDF / print: exactly two physical A4 sheets.
+   Page 1 = A4 landscape. Page 2 = A4 portrait.
+   Print sizing is independent from the on-screen zoom. */
+@page firstform {
+  size: A4 landscape;
+  margin: 0;
+}
+
+@page secondform {
+  size: A4 portrait;
+  margin: 0;
+}
+
 @media print {
-  .page2-tools {
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .toolbar,
+  .preview-toolbar,
+  .hint,
+  .page2-tools,
+  .hidden-file-input {
+    display: none !important;
+  }
+
+  .stage {
+    position: static !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  .page-shell {
+    display: block !important;
+    position: relative !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+  }
+
+  .page-shell-one {
+    width: 297mm !important;
+    height: 210mm !important;
+    page: firstform;
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .page-shell-two {
+    width: 210mm !important;
+    height: 297mm !important;
+    margin-top: 0 !important;
+    page: secondform;
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  .page {
+    position: absolute !important;
+    left: 0 !important;
+    box-shadow: none !important;
+    background: #fff !important;
+    transform-origin: top left !important;
+  }
+
+  /* 1536x1024 scaled to 297x198 mm, vertically centered on A4 landscape. */
+  .page-one {
+    top: 6mm !important;
+    width: 1536px !important;
+    height: 1024px !important;
+    transform: scale(0.7308070866) !important;
+  }
+
+  /* 1536x1921 scaled to 210x262.64 mm, vertically centered on A4 portrait. */
+  .page-two {
+    top: 17.181640625mm !important;
+    width: 1536px !important;
+    height: 1921px !important;
+    transform: scale(0.5167322835) !important;
+  }
+
+  .form-paper {
+    width: 1536px !important;
+    height: 1024px !important;
+  }
+
+  .form-paper.page-two-paper {
+    width: 1536px !important;
+    height: 1921px !important;
+  }
+
+  .form-overlay {
+    overflow: visible !important;
+  }
+
+  .placed-media {
+    display: block !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .slot-field::after,
+  .text-field::after,
+  .choice-field::after {
     display: none !important;
   }
 }
