@@ -913,11 +913,19 @@
 
         const { jsPDF } = window.jspdf;
 
-        // Combine both editor pages into ONE continuous PDF page,
-        // keeping the same top-to-bottom order and proportions seen in the editor.
+        // Combine both editor pages into ONE continuous PDF page.
+        // The dashed divider sits at the same visual distance from the
+        // end of page 1 and the first content of page 2.
         const gapPx = 72 * 1.5;
+
+        // Page 2 has extra blank space at its top in the editor canvas.
+        // Crop only that empty top area in the PDF composition so the
+        // first heading begins symmetrically beneath the divider.
+        const page2TopCrop = Math.round(78 * 1.5);
+        const page2VisibleHeight = canvas2.height - page2TopCrop;
+
         const combinedWidth = Math.max(canvas1.width, canvas2.width);
-        const combinedHeight = canvas1.height + gapPx + canvas2.height;
+        const combinedHeight = canvas1.height + gapPx + page2VisibleHeight;
 
         const combinedCanvas = document.createElement("canvas");
         combinedCanvas.width = combinedWidth;
@@ -948,7 +956,17 @@
         ctx.stroke();
         ctx.restore();
 
-        ctx.drawImage(canvas2, x2, canvas1.height + gapPx);
+        ctx.drawImage(
+          canvas2,
+          0,
+          page2TopCrop,
+          canvas2.width,
+          page2VisibleHeight,
+          x2,
+          canvas1.height + gapPx,
+          canvas2.width,
+          page2VisibleHeight
+        );
 
         // Custom single-sheet size with the exact combined editor aspect ratio.
         const pdfWidthMm = 210;
