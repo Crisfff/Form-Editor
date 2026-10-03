@@ -215,11 +215,17 @@
     const line = (x1, y1, x2, y2, attrs = {}) =>
       add("line", { x1, y1, x2, y2, stroke: "#000", "stroke-width": 1.35, ...attrs });
 
-    return { svg, add, text, rect, line };
+    const fitText = (x, y, value, size, maxWidth, weight = 400, anchor = "start") => {
+      const estimatedWidth = Math.max(1, value.length * size * 0.52);
+      const fittedSize = Math.min(size, size * (maxWidth / estimatedWidth));
+      return text(x, y, value, Math.max(10, fittedSize), weight, anchor);
+    };
+
+    return { svg, add, text, fitText, rect, line };
   }
 
   function drawStaticForm() {
-    const { svg, text, rect, line } = svgBase(PAGE1_W, PAGE1_H);
+    const { svg, text, fitText, rect, line } = svgBase(PAGE1_W, PAGE1_H);
 
     line(110, 30, 680, 30, { "stroke-width": 3, "stroke-dasharray": "10 6" });
     line(855, 30, 1428, 30, { "stroke-width": 3, "stroke-dasharray": "10 6" });
@@ -252,12 +258,12 @@
     text(1256, 369, "год", 18);
 
     text(257, 416, "(в случае ограничения срока действия документа)", 17);
-    text(109, 442, "в установленном порядке уведомил о прибытии в место пребывания по адресу:", 17);
+    fitText(109, 442, "в установленном порядке уведомил о прибытии в место пребывания по адресу:", 17, 1180);
     text(109, 473, "субъект Российской Федерации", 18);
     text(109, 514, "район", 20);
     text(289, 540, "(при наличии)", 16);
 
-    text(109, 562, "городской округ (при наличии), внутригородской район (при наличии), населенный пункт", 16);
+    fitText(109, 562, "городской округ (при наличии), внутригородской район (при наличии), населенный пункт", 16, 1185);
     text(109, 634, "улица", 20);
     text(326, 654, "(при наличии)", 16);
 
@@ -266,21 +272,21 @@
     text(969, 679, "корпус", 18);
     text(1151, 679, "строение", 18);
     text(109, 722, "квартира", 20);
-    text(388, 722, "представленных в пределах квартиры (при наличии)", 15);
+    fitText(388, 722, "представленных в пределах квартиры (при наличии)", 15, 375);
 
-    text(109, 752, "Кадастровый номер (при наличии), помещение в пределах квартиры (при наличии),", 14);
-    text(109, 770, "кадастровый номер (при наличии), жилое или нежилое помещение в", 14);
-    text(109, 788, "пределах здания (сооружения) в случае, предусмотренном Федеральным законом", 14);
+    fitText(109, 752, "Кадастровый номер (при наличии), помещение в пределах квартиры (при наличии),", 14, 600);
+    fitText(109, 770, "кадастровый номер (при наличии), жилое или нежилое помещение в", 14, 600);
+    fitText(109, 788, "пределах здания (сооружения) в случае, предусмотренном Федеральным законом", 14, 600);
 
-    text(109, 816, "фактическое место проживания (в случае, если место пребывания не совпадает с адресом места пребывания,", 13);
-    text(109, 834, "указанным в документе, удостоверяющем личность (в том числе временном)),", 13);
+    fitText(109, 816, "фактическое место проживания (в случае, если место пребывания не совпадает с адресом места пребывания,", 13, 640);
+    fitText(109, 834, "указанным в документе, удостоверяющем личность (в том числе временном)),", 13, 640);
     text(109, 852, "оказываемые гостиничные услуги)", 13);
 
-    text(109, 884, "строение иное использование (в случае, если место пребывания не совпадает с адресом места пребывания,", 13);
-    text(109, 902, "указанным в документе, удостоверяющем личность (в том числе временном))", 13);
+    fitText(109, 884, "строение иное использование (в случае, если место пребывания не совпадает с адресом места пребывания,", 13, 640);
+    fitText(109, 902, "указанным в документе, удостоверяющем личность (в том числе временном))", 13, 640);
 
-    text(109, 929, "городское и сельское поселение (при наличии), внутригородской район (при наличии)", 15);
-    text(109, 965, "Кадастровый номер земельного участка (при наличии)", 16);
+    fitText(109, 929, "городское и сельское поселение (при наличии), внутригородской район (при наличии)", 15, 640);
+    fitText(109, 965, "Кадастровый номер земельного участка (при наличии)", 16, 640);
 
     text(109, 1003, "Заявленный срок пребывания до:", 20);
     text(494, 1003, "число", 18);
@@ -844,13 +850,8 @@
   }
 
   function addCanvasToPdf(pdf, canvas, pageWidthMm, pageHeightMm) {
-    const image = canvas.toDataURL("image/jpeg", 0.94);
-    const ratio = Math.min(pageWidthMm / canvas.width, pageHeightMm / canvas.height);
-    const drawWidth = canvas.width * ratio;
-    const drawHeight = canvas.height * ratio;
-    const x = (pageWidthMm - drawWidth) / 2;
-    const y = (pageHeightMm - drawHeight) / 2;
-    pdf.addImage(image, "JPEG", x, y, drawWidth, drawHeight, undefined, "FAST");
+    const image = canvas.toDataURL("image/png");
+    pdf.addImage(image, "PNG", 0, 0, pageWidthMm, pageHeightMm, undefined, "FAST");
   }
 
   async function printPdf() {
@@ -901,17 +902,24 @@
         });
 
         const { jsPDF } = window.jspdf;
+
+        // Keep the PDF page proportions identical to the editor.
+        const page1PdfWidth = 297;
+        const page1PdfHeight = page1PdfWidth * (PAGE1_H / PAGE1_W);
+        const page2PdfWidth = 210;
+        const page2PdfHeight = page2PdfWidth * (PAGE2_H / PAGE2_W);
+
         const pdf = new jsPDF({
           orientation: "landscape",
           unit: "mm",
-          format: "a4",
+          format: [page1PdfWidth, page1PdfHeight],
           compress: true
         });
 
-        addCanvasToPdf(pdf, canvas1, 297, 210);
+        addCanvasToPdf(pdf, canvas1, page1PdfWidth, page1PdfHeight);
 
-        pdf.addPage("a4", "portrait");
-        addCanvasToPdf(pdf, canvas2, 210, 297);
+        pdf.addPage([page2PdfWidth, page2PdfHeight], "portrait");
+        addCanvasToPdf(pdf, canvas2, page2PdfWidth, page2PdfHeight);
 
         pdf.save("Form-Editor.pdf");
       } finally {
