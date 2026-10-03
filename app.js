@@ -731,7 +731,31 @@
     fitToWidth(true);
   });
 
-  document.getElementById("printBtn").addEventListener("click", () => window.print());
+  async function printPdf() {
+    shell.classList.remove("is-hidden");
+    shell2.classList.remove("is-hidden");
+
+    if (document.fonts && document.fonts.ready) {
+      try { await document.fonts.ready; } catch {}
+    }
+
+    const images = Array.from(page.querySelectorAll("img")).concat(Array.from(page2.querySelectorAll("img")));
+    await Promise.all(images.map(img => {
+      if (!img.src || img.hidden) return Promise.resolve();
+      if (typeof img.decode === "function") {
+        return img.decode().catch(() => undefined);
+      }
+      if (img.complete) return Promise.resolve();
+      return new Promise(resolve => {
+        img.addEventListener("load", resolve, { once: true });
+        img.addEventListener("error", resolve, { once: true });
+      });
+    }));
+
+    window.print();
+  }
+
+  document.getElementById("printBtn").addEventListener("click", printPdf);
 
   document.getElementById("clearBtn").addEventListener("click", () => {
     if (!confirm("¿Borrar todos los datos escritos en las dos páginas?")) return;
