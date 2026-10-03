@@ -731,6 +731,74 @@
     fitToWidth(true);
   });
 
+  function loadScriptOnce(src) {
+    return new Promise((resolve, reject) => {
+      const existing = Array.from(document.scripts).find(script => script.src === src);
+      if (existing) {
+        if (existing.dataset.loaded === "true") {
+          resolve();
+          return;
+        }
+        existing.addEventListener("load", () => {
+          existing.dataset.loaded = "true";
+          resolve();
+        }, { once: true });
+        existing.addEventListener("error", reject, { once: true });
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = src;
+      script.async = true;
+      script.addEventListener("load", () => {
+        script.dataset.loaded = "true";
+        resolve();
+      }, { once: true });
+      script.addEventListener("error", reject, { once: true });
+      document.head.appendChild(script);
+    });
+  }
+
+  async function ensurePdfLibraries() {
+    const sources = [
+      {
+        test: () => !!window.html2canvas,
+        urls: [
+          "https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js",
+          "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
+        ]
+      },
+      {
+        test: () => !!(window.jspdf && window.jspdf.jsPDF),
+        urls: [
+          "https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js",
+          "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"
+        ]
+      }
+    ];
+
+    for (const source of sources) {
+      if (source.test()) continue;
+
+      let loaded = false;
+      for (const url of source.urls) {
+        try {
+          await loadScriptOnce(url);
+          if (source.test()) {
+            loaded = true;
+            break;
+          }
+        } catch {}
+      }
+
+      if (!loaded && !source.test()) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   function waitForImage(img) {
     if (!img || !img.src || img.hidden) return Promise.resolve();
     if (typeof img.decode === "function") {
@@ -788,8 +856,9 @@
   async function printPdf() {
     const button = document.getElementById("printBtn");
 
-    if (!window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) {
-      alert("No se pudieron cargar los componentes necesarios para crear el PDF. Recarga la página e inténtalo de nuevo.");
+    const librariesReady = await ensurePdfLibraries();
+    if (!librariesReady) {
+      alert("No se pudieron cargar los componentes necesarios para crear el PDF. Comprueba la conexión y vuelve a intentarlo.");
       return;
     }
 
