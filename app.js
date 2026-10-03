@@ -903,24 +903,38 @@
 
         const { jsPDF } = window.jspdf;
 
-        // Keep the PDF page proportions identical to the editor.
-        const page1PdfWidth = 297;
-        const page1PdfHeight = page1PdfWidth * (PAGE1_H / PAGE1_W);
-        const page2PdfWidth = 210;
-        const page2PdfHeight = page2PdfWidth * (PAGE2_H / PAGE2_W);
+        // Combine both editor pages into ONE continuous PDF page,
+        // keeping the same top-to-bottom order and proportions seen in the editor.
+        const gapPx = 48 * 1.5;
+        const combinedWidth = Math.max(canvas1.width, canvas2.width);
+        const combinedHeight = canvas1.height + gapPx + canvas2.height;
+
+        const combinedCanvas = document.createElement("canvas");
+        combinedCanvas.width = combinedWidth;
+        combinedCanvas.height = combinedHeight;
+
+        const ctx = combinedCanvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, combinedWidth, combinedHeight);
+
+        const x1 = (combinedWidth - canvas1.width) / 2;
+        const x2 = (combinedWidth - canvas2.width) / 2;
+
+        ctx.drawImage(canvas1, x1, 0);
+        ctx.drawImage(canvas2, x2, canvas1.height + gapPx);
+
+        // Custom single-sheet size with the exact combined editor aspect ratio.
+        const pdfWidthMm = 210;
+        const pdfHeightMm = pdfWidthMm * (combinedHeight / combinedWidth);
 
         const pdf = new jsPDF({
-          orientation: "landscape",
+          orientation: "portrait",
           unit: "mm",
-          format: [page1PdfWidth, page1PdfHeight],
+          format: [pdfWidthMm, pdfHeightMm],
           compress: true
         });
 
-        addCanvasToPdf(pdf, canvas1, page1PdfWidth, page1PdfHeight);
-
-        pdf.addPage([page2PdfWidth, page2PdfHeight], "portrait");
-        addCanvasToPdf(pdf, canvas2, page2PdfWidth, page2PdfHeight);
-
+        addCanvasToPdf(pdf, combinedCanvas, pdfWidthMm, pdfHeightMm);
         pdf.save("Form-Editor.pdf");
       } finally {
         capture1.host.remove();
